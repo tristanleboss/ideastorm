@@ -1,0 +1,25 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+parameters:
+    app.upload_dir: '%env(resolve:IDEASTORM_UPLOAD_DIR)%'
+    app.max_upload_size: '%env(int:IDEASTORM_MAX_UPLOAD_SIZE)%'
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        bind:
+            string $uploadDir: '%app.upload_dir%'
+            int $maxUploadSize: '%app.max_upload_size%'
+            bool $debug: '%kernel.debug%'
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'

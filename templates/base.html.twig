@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}IdeaStorm{% endblock %}</title>
+    <meta name="description" content="{% block description %}Browse projects, meet the people behind them and throw your ideas into the mix — in writing, in your own voice or on camera.{% endblock %}">
+    <meta name="csrf-token" content="{{ csrf_token('ideastorm_api') }}">
+    <link rel="icon" href="data:image/svg+xml,{{ '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">💡</text></svg>'|url_encode }}">
+    <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    {% block stylesheets %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+    <div class="shell site-header__inner">
+        <a class="brand" href="{{ path('app_home') }}">
+            <span class="brand__mark" aria-hidden="true">💡</span>
+            <span class="brand__name">IdeaStorm</span>
+        </a>
+
+        <nav class="site-nav" aria-label="Account">
+            {% if app.user %}
+                <span class="site-nav__user">
+                    {% if app.user.avatarUrl %}
+                        <img class="avatar avatar--sm" src="{{ app.user.avatarUrl }}" alt="" referrerpolicy="no-referrer">
+                    {% else %}
+                        <span class="avatar avatar--sm avatar--initials" aria-hidden="true">{{ app.user.initials }}</span>
+                    {% endif %}
+                    <span class="site-nav__name">{{ app.user.displayName }}</span>
+                </span>
+                <form method="post" action="{{ path('app_logout') }}" class="site-nav__logout">
+                    <button type="submit" class="btn btn--ghost btn--sm">Sign out</button>
+                </form>
+            {% else %}
+                <a class="btn btn--ghost btn--sm" href="{{ path('app_login') }}">Sign in</a>
+                <a class="btn btn--primary btn--sm" href="{{ path('app_register') }}">Create account</a>
+            {% endif %}
+        </nav>
+    </div>
+</header>
+
+{% for label, messages in app.flashes %}
+    {% for message in messages %}
+        <div class="shell"><p class="flash flash--{{ label }}" role="status">{{ message }}</p></div>
+    {% endfor %}
+{% endfor %}
+
+<main id="main">
+    {% block body %}{% endblock %}
+</main>
+
+<footer class="site-footer">
+    <div class="shell">
+        <p>IdeaStorm — a Symfony &amp; Vue 3 playground for collecting ideas.</p>
+    </div>
+</footer>
+
+{% block javascripts %}{% endblock %}
+</body>
+</html>

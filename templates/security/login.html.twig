@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Sign in · IdeaStorm{% endblock %}
+{% block body_class %}page--narrow{% endblock %}
+
+{% block body %}
+    <div class="shell auth">
+        <h1 class="auth__title">Sign in</h1>
+        <p class="auth__lead">You can browse every project without an account. Signing in lets you submit ideas, comment and vote.</p>
+
+        {% if error %}
+            <p class="flash flash--error" role="alert">{{ error.messageKey|trans(error.messageData, 'security') }}</p>
+        {% endif %}
+
+        <form method="post" action="{{ path('app_login') }}" class="auth__form">
+            <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="email" id="email" name="email" value="{{ lastEmail }}" required autofocus autocomplete="email">
+            </div>
+
+            <div class="field">
+                <label for="password">Password</label>
+                <input type="password" id="password" name="password" required autocomplete="current-password">
+            </div>
+
+            <button type="submit" class="btn btn--primary btn--block">Sign in</button>
+        </form>
+
+        {% if socialProviders is not empty %}
+            <div class="auth__divider"><span>or continue with</span></div>
+            <div class="auth__social">
+                {% for provider in socialProviders %}
+                    <a class="btn btn--social btn--social-{{ provider.icon }}" href="{{ path('connect_start', {service: provider.key}) }}">
+                        {{ include('security/_provider_icon.html.twig', {icon: provider.icon}) }}
+                        <span>{{ provider.label }}</span>
+                    </a>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <p class="auth__switch">No account yet? <a href="{{ path('app_register') }}">Create one</a>.</p>
+    </div>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div id="app" class="app-root">
+        {# Placeholder shown until Vue takes over, and left in place if it never does. #}
+        <div class="shell app-boot">
+            <p class="app-boot__spinner" aria-hidden="true"></p>
+            <p class="app-boot__text">Loading IdeaStorm…</p>
+            <noscript>
+                <p class="empty">IdeaStorm needs JavaScript to run. Please enable it and reload the page.</p>
+            </noscript>
+        </div>
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {# Bootstrap payload, so the first paint knows who is signed in without a round trip. #}
+    <script type="application/json" id="ideastorm-bootstrap">{{ bootstrap|json_encode(constant('JSON_UNESCAPED_SLASHES') b-or constant('JSON_UNESCAPED_UNICODE'))|raw }}</script>
+
+    {# Vue 3 from the CDN, with the copy shipped in public/js/vendor as a fallback for
+       offline installs and for when the CDN is blocked. #}
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.5.22/dist/vue.global.prod.js"
+            integrity="sha384-8b+88atXoPL4ijtVqe+2pA+PC8VNYSGqubRseMLV0qxfa5GMHeftEEHvk4eM4RFT"
+            crossorigin="anonymous"></script>
+    <script>
+        window.Vue || document.write('<script src="{{ asset('js/vendor/vue.global.prod.js') }}"><\/script>');
+    </script>
+
+    <script src="{{ asset('js/api.js') }}"></script>
+    <script src="{{ asset('js/components/common.js') }}"></script>
+    <script src="{{ asset('js/components/recorder.js') }}"></script>
+    <script src="{{ asset('js/components/composer.js') }}"></script>
+    <script src="{{ asset('js/components/ideas.js') }}"></script>
+    <script src="{{ asset('js/components/projects.js') }}"></script>
+    <script src="{{ asset('js/app.js') }}"></script>
+{% endblock %}

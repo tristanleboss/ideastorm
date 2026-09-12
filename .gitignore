@@ -1,0 +1,22 @@
+
+###> symfony/framework-bundle ###
+/.env.local
+/.env.local.php
+/.env.*.local
+/config/secrets/prod/prod.decrypt.private.php
+/public/bundles/
+/var/
+/vendor/
+###< symfony/framework-bundle ###
+
+###> phpunit/phpunit ###
+/phpunit.xml
+/.phpunit.cache/
+###< phpunit/phpunit ###
+
+###> ideastorm ###
+# Uploaded attachments and the SQLite database live under /var/, which is already ignored
+# above. Listed here as a reminder of what must be backed up in a real deployment:
+#   var/uploads/  attachment bytes
+#   var/*.db      the SQLite database, when that is the configured driver
+###< ideastorm ###
