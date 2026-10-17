@@ -1,0 +1,42 @@
+# Front controller for Apache (WAMP, XAMPP, any mod_rewrite host).
+#
+# Static files that exist under public/ — css, js, vendor/vue — are served directly;
+# everything else is handed to Symfony's index.php. Needs mod_rewrite enabled and
+# AllowOverride All on the document root. This is the standard symfony/apache-pack
+# rule set, trimmed to what IdeaStorm needs.
+
+DirectoryIndex index.php
+
+<IfModule mod_negotiation.c>
+    Options -MultiViews
+</IfModule>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Pass the Authorization header through to PHP.
+    RewriteCond %{HTTP:Authorization} .+
+    RewriteRule ^ - [E=HTTP_AUTHORIZATION:%0]
+
+    # Work out the base path when the app is served from a sub-folder, so the rules
+    # below do not redirect away from it.
+    RewriteCond %{REQUEST_URI}::$0 ^(/.+)/(.*)::\2$
+    RewriteRule .* - [E=BASE:%1]
+
+    # Strip a literal /index.php from URLs.
+    RewriteCond %{ENV:REDIRECT_STATUS} ^$
+    RewriteRule ^index\.php(?:/(.*)|$) %{ENV:BASE}/$1 [R=301,L]
+
+    # Serve any file that exists as-is.
+    RewriteCond %{REQUEST_FILENAME} -f
+    RewriteRule .? - [L]
+
+    # Everything else goes to the front controller.
+    RewriteRule .? %{ENV:BASE}/index.php [L]
+</IfModule>
+
+<IfModule !mod_rewrite.c>
+    <IfModule mod_alias.c>
+        RedirectMatch 307 ^/$ /index.php/
+    </IfModule>
+</IfModule>

@@ -94,6 +94,38 @@ pointed at `public/`, you do not need it.
 > origin. `localhost` counts as secure, so recording works in local development; on any other
 > host, serve the site over https or the recorder will say so and fall back to file attachments.
 
+## Running it on WAMP (Windows + Apache)
+
+The GitHub branch stays the single source of truth; a WAMP install is just another checkout of it.
+
+1. **PHP 8.2 or newer** in WAMP (tray icon → PHP → Version), with these extensions ticked under
+   PHP → PHP extensions: `pdo_sqlite`, `intl`, `fileinfo`, `mbstring`, `gd`, `curl`, `openssl`.
+   `fileinfo` matters most — upload validation reads the file's real type with it.
+   Also enable Apache's `rewrite_module` (Apache → Apache modules).
+2. **Clone outside `www`**, then point Apache at its `public/` folder only:
+   ```bat
+   cd C:\wamp64
+   git clone https://github.com/tristanleboss/ideastorm
+   cd ideastorm
+   git checkout claude/beautiful-newton-rc2vmh
+   composer install
+   composer setup
+   ```
+3. **Virtual host.** WAMP → Add a Virtual Host, name it `ideastorm.localhost`, and give it the
+   path `C:\wamp64\ideastorm\public`. Use a `.localhost` name: browsers treat it as a secure
+   origin, so voice and video recording work over plain http. A `.test` or `.local` name would
+   need https.
+4. **Per-machine settings go in `.env.local`** (git-ignored, so `git pull` never clobbers it) —
+   for example the OAuth ids, or `APP_ENV=prod` with a real `APP_SECRET`. Register
+   `http://ideastorm.localhost/connect/<provider>/check` as the redirect URI if you use social login.
+5. **Large uploads**: raise `upload_max_filesize` and `post_max_size` in WAMP's `php.ini` to at
+   least `IDEASTORM_MAX_UPLOAD_SIZE` (64M by default), then restart Apache.
+
+To pick up later work from the cloud session: `git pull`, then `composer install` and
+`php bin/console doctrine:migrations:migrate --no-interaction` if dependencies or the schema changed.
+The database (`var/*.db`) and uploads (`var/uploads/`) are local to each install and never travel
+through git — the cloud copy and the WAMP copy hold separate data.
+
 ## Configuration
 
 Everything lives in `.env`; override it in `.env.local`, which is not committed.
