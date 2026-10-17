@@ -12,6 +12,22 @@ window.IdeaStorm = window.IdeaStorm || {};
 
     const { reactive } = window.Vue;
 
+    /**
+     * The folder the app is served from: "" at a domain root, "/idees" when it lives under
+     * http://localhost/idees. Every URL the frontend builds goes through url() so the same
+     * code runs in either place.
+     */
+    const meta = document.querySelector('meta[name="base-path"]');
+    const basePath = ((meta && meta.getAttribute('content')) || '').replace(/\/+$/, '');
+
+    IdeaStorm.basePath = basePath;
+    /** "/api/projects" -> "/idees/api/projects" (a no-op at the domain root). */
+    IdeaStorm.url = (path) => basePath + path;
+    /** The inverse: "/idees/projects/x" -> "/projects/x", for matching routes. */
+    IdeaStorm.stripBase = (pathname) => (
+        basePath && pathname.startsWith(basePath) ? (pathname.slice(basePath.length) || '/') : pathname
+    );
+
     /** An API call that came back with a non-2xx status. */
     class ApiError extends Error {
         constructor(message, status, payload) {
@@ -55,7 +71,7 @@ window.IdeaStorm = window.IdeaStorm || {};
             headers['X-CSRF-Token'] = csrfToken();
         }
 
-        let url = path;
+        let url = IdeaStorm.url(path);
         if (settings.query) {
             const params = new URLSearchParams();
             Object.entries(settings.query).forEach(([key, value]) => {

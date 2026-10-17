@@ -24,7 +24,8 @@
     const { store, components } = IdeaStorm;
 
     /** Turns a path into {name, slug, ideaId}. */
-    function parseRoute(pathname) {
+    function parseRoute(fullPathname) {
+        const pathname = IdeaStorm.stripBase(fullPathname);
         const ideaMatch = pathname.match(/^\/projects\/([a-z0-9-]+)\/ideas\/(\d+)\/?$/);
         if (ideaMatch) {
             return { name: 'idea', slug: ideaMatch[1], ideaId: Number(ideaMatch[2]) };
@@ -64,10 +65,11 @@
             },
 
             navigate(path) {
-                if (window.location.pathname !== path) {
-                    window.history.pushState({}, '', path);
+                const target = IdeaStorm.url(path);
+                if (window.location.pathname !== target) {
+                    window.history.pushState({}, '', target);
                 }
-                this.route = parseRoute(path);
+                this.route = parseRoute(target);
                 window.scrollTo({ top: 0, behavior: 'smooth' });
             },
 

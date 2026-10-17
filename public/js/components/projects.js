@@ -24,7 +24,7 @@
             };
         },
         setup() {
-            return { store, utils };
+            return { store, utils, url: IdeaStorm.url };
         },
         created() {
             this.debouncedSearch = utils.debounce(() => this.load(), 300);
@@ -107,7 +107,7 @@
                         :key="project.id"
                         class="card project-card"
                         :style="{ '--accent': project.accentColor }"
-                        :href="'/projects/' + project.slug"
+                        :href="url('/projects/' + project.slug)"
                         @click.prevent="$emit('open', project.slug)"
                     >
                         <div class="row row--wrap" style="gap:.4rem">
@@ -181,7 +181,7 @@
             };
         },
         setup() {
-            return { store, utils };
+            return { store, utils, url: IdeaStorm.url };
         },
         created() {
             this.debouncedSearch = utils.debounce(() => this.runSearch(), 300);
@@ -396,7 +396,7 @@
             };
         },
         setup() {
-            return { store, utils };
+            return { store, utils, url: IdeaStorm.url };
         },
         mounted() {
             this.load();
@@ -478,7 +478,7 @@
         template: `
             <div>
                 <p style="margin-bottom:1rem">
-                    <a href="/" @click.prevent="$emit('back')">← All projects</a>
+                    <a :href="url('/')" @click.prevent="$emit('back')">← All projects</a>
                 </p>
 
                 <template v-if="loading">

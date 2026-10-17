@@ -235,7 +235,7 @@
         },
         computed: {
             permalink() {
-                return '/projects/' + this.idea.projectSlug + '/ideas/' + this.idea.id;
+                return IdeaStorm.url('/projects/' + this.idea.projectSlug + '/ideas/' + this.idea.id);
             },
             statusBadgeClass() {
                 return ['badge', utils.statusTone(this.idea.status.value)];
@@ -547,7 +547,7 @@
             },
 
             openIdea(idea) {
-                window.history.pushState({}, '', '/projects/' + idea.projectSlug + '/ideas/' + idea.id);
+                window.history.pushState({}, '', IdeaStorm.url('/projects/' + idea.projectSlug + '/ideas/' + idea.id));
                 const node = document.getElementById('idea-' + idea.id);
                 if (node) {
                     node.scrollIntoView({ behavior: 'smooth', block: 'start' });

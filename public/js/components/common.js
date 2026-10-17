@@ -96,12 +96,15 @@
         props: {
             message: { type: String, default: 'Sign in to join the conversation.' },
         },
+        setup() {
+            return { url: IdeaStorm.url };
+        },
         template: `
             <p class="empty">
                 {{ message }}
                 <br>
-                <a class="btn btn--primary btn--sm" style="margin-top:.7rem" href="/login">Sign in</a>
-                <a class="btn btn--ghost btn--sm" style="margin-top:.7rem" href="/register">Create an account</a>
+                <a class="btn btn--primary btn--sm" style="margin-top:.7rem" :href="url('/login')">Sign in</a>
+                <a class="btn btn--ghost btn--sm" style="margin-top:.7rem" :href="url('/register')">Create an account</a>
             </p>
         `,
     };

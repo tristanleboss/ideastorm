@@ -46,7 +46,7 @@ is no build step, no bundler and no `node_modules`: clone, install the PHP depen
 
 ## Requirements
 
-- PHP 8.2 or newer with the `pdo_sqlite`, `intl`, `fileinfo`, `mbstring` and `gd` extensions
+- PHP 8.2 or newer (tested on 8.3 and 8.4) with the `pdo_sqlite`, `intl`, `fileinfo`, `mbstring` and `gd` extensions
 - Composer
 
 Nothing else. The default database is a SQLite file, so there is no server to install.
@@ -94,37 +94,35 @@ pointed at `public/`, you do not need it.
 > origin. `localhost` counts as secure, so recording works in local development; on any other
 > host, serve the site over https or the recorder will say so and fall back to file attachments.
 
-## Running it on WAMP (Windows + Apache)
+## Running it on WAMP (Windows + Apache) at `http://localhost/idees`
 
-The GitHub branch stays the single source of truth; a WAMP install is just another checkout of it.
+The GitHub branch stays the single source of truth; the WAMP install is just a checkout of it
+(tested against PHP 8.3; the project supports 8.2 and newer).
 
-1. **PHP 8.2 or newer** in WAMP (tray icon → PHP → Version), with these extensions ticked under
-   PHP → PHP extensions: `pdo_sqlite`, `intl`, `fileinfo`, `mbstring`, `gd`, `curl`, `openssl`.
-   `fileinfo` matters most — upload validation reads the file's real type with it.
-   Also enable Apache's `rewrite_module` (Apache → Apache modules).
-2. **Clone outside `www`**, then point Apache at its `public/` folder only:
+1. **PHP extensions** (tray icon → PHP → PHP extensions): `pdo_sqlite`, `intl`, `fileinfo`,
+   `mbstring`, `gd`, `curl`, `openssl`. `fileinfo` matters most — upload validation reads a file's
+   real type with it. Also enable Apache's `rewrite_module` (Apache → Apache modules).
+2. **Install** into `C:\wamp64\www\idees` with the bundled script (needs git and Composer on the
+   PATH; the script adds WAMP's PHP for you):
    ```bat
-   cd C:\wamp64
-   git clone https://github.com/tristanleboss/ideastorm
-   cd ideastorm
-   git checkout claude/beautiful-newton-rc2vmh
-   composer install
-   composer setup
+   curl -L -o deploy-wamp.bat https://raw.githubusercontent.com/tristanleboss/ideastorm/claude/beautiful-newton-rc2vmh/scripts/deploy-wamp.bat
+   deploy-wamp.bat
    ```
-3. **Virtual host.** WAMP → Add a Virtual Host, name it `ideastorm.localhost`, and give it the
-   path `C:\wamp64\ideastorm\public`. Use a `.localhost` name: browsers treat it as a secure
-   origin, so voice and video recording work over plain http. A `.test` or `.local` name would
-   need https.
-4. **Per-machine settings go in `.env.local`** (git-ignored, so `git pull` never clobbers it) —
-   for example the OAuth ids, or `APP_ENV=prod` with a real `APP_SECRET`. Register
-   `http://ideastorm.localhost/connect/<provider>/check` as the redirect URI if you use social login.
+   Run it again at any time to update: it pulls, runs `composer install`, applies migrations and
+   clears the cache. Demo data is loaded on the first install only.
+3. **Add an Apache alias** (tray icon → Your Aliases → Add an alias): name `idees`, destination
+   `C:/wamp64/www/idees/public/`. The alias must point at `public/`, never at the project root —
+   that is what keeps `.env`, `src/`, `var/` and your database from being served as web files.
+   Restart the services, then open <http://localhost/idees>.
+4. **Per-machine settings go in `.env.local`** (git-ignored, so updates never clobber it) — OAuth
+   ids, a real `APP_SECRET`, `APP_ENV=prod`. Register
+   `http://localhost/idees/connect/<provider>/check` as the redirect URI for social login.
 5. **Large uploads**: raise `upload_max_filesize` and `post_max_size` in WAMP's `php.ini` to at
    least `IDEASTORM_MAX_UPLOAD_SIZE` (64M by default), then restart Apache.
 
-To pick up later work from the cloud session: `git pull`, then `composer install` and
-`php bin/console doctrine:migrations:migrate --no-interaction` if dependencies or the schema changed.
-The database (`var/*.db`) and uploads (`var/uploads/`) are local to each install and never travel
-through git — the cloud copy and the WAMP copy hold separate data.
+`http://localhost` counts as a secure origin, so voice and video recording work over plain http
+there. The database (`var/*.db`) and uploads (`var/uploads/`) are local to each install and never
+travel through git — the cloud copy and the WAMP copy hold separate data.
 
 ## Configuration
 

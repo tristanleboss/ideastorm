@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}IdeaStorm{% endblock %}</title>
     <meta name="description" content="{% block description %}Browse projects, meet the people behind them and throw your ideas into the mix — in writing, in your own voice or on camera.{% endblock %}">
+    <meta name="base-path" content="{{ app.request.basePath }}">
     <meta name="csrf-token" content="{{ csrf_token('ideastorm_api') }}">
     <link rel="icon" href="data:image/svg+xml,{{ '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y="0.9em" font-size="90">💡</text></svg>'|url_encode }}">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
